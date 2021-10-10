@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <Typing.h>
 #define next ptr_to_next_node
 #define prev ptr_to_prev_node
 
@@ -35,12 +34,10 @@ void show()
 
 void insert(Node **cur, char c)
 {
-
 }
 
 void deletion(Node **cur)
 {
-
 }
 
 void backspace(Node **cur)
@@ -49,26 +46,26 @@ void backspace(Node **cur)
 
 void go_left(Node **cur, int t)
 {
-    while(t--)
+    while (t--)
     {
-        (*cur)=(*cur)->ptr_to_prev_node;
+        (*cur) = (*cur)->ptr_to_prev_node;
     }
 }
 
 void go_right(Node **cur, int t)
 {
-        while(t--)
+    while (t--)
     {
-        (*cur)=(*cur)->ptr_to_next_node;
+        (*cur) = (*cur)->ptr_to_next_node;
     }
 }
 
 void go_home(Node **cur)
 {
-    (*cur)=head;
+    (*cur) = head;
 }
 
 void go_end(Node **cur)
 {
-    (*cur)=tail;
+    (*cur) = tail;
 }
