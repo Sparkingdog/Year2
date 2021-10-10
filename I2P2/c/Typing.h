@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #define next ptr_to_next_node
 #define prev ptr_to_prev_node
-
+//hi
 typedef struct _NODE
 {
     char character;
@@ -34,6 +34,14 @@ void show()
 
 void insert(Node **cur, char c)
 {
+    Node *new_n = (Node *)malloc(sizeof(Node));
+    new_n->character = c;
+    new_n->ptr_to_next_node = (*cur)->ptr_to_next_node;
+    (*cur)->ptr_to_next_node->ptr_to_prev_node = new_n;
+    (*cur)->ptr_to_next_node = new_n;
+    new_n->ptr_to_prev_node = (*cur);
+    if ((*cur) == tail)
+        tail = new_n;
 }
 
 void deletion(Node **cur)
