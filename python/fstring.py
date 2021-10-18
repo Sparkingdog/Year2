@@ -5,7 +5,6 @@ print("Hello %s ,Your ID is %d" % (name, id))
 print("Hello {} ,Your ID is {}" .format(name, id))
 print("Hello {name} ,Your ID is {id}" .format(name=name, id=id))
 print(f"Hello {name},Your ID is {id}")
-
 x = 10
 y = 20
 print(f"sum of x + y = {x+y}")
