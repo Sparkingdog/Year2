@@ -3,18 +3,24 @@
 #include "hw1LinkedList.h"
 using namespace std;
 
-cardLinkedList l;
+cardLinkedList c;
+peopleLinkedList p;
 int main()
 {
     int N, M, K;
+    int a, b;
     //  N player M cards K joker cards
     cin >> N >> M >> K;
-    for (int i = 0; i < M; i++)
+    p.createCircularLinkedList(N);
+    for (int i = 1; i <= M; i++)
     {
-        l.insertBack(i);
+        c.insertBack(i);
     }
-    l.printList();
-    //   while (K--)
-    //     cin >> N; // index of person who has joker
+    while (cin >> a, b) // draw  a'th card from next place on b'th place
+    {
+        if (a == -1 && b == -1)
+            break;
+    }
+    c.printList();
     return 0;
 }
