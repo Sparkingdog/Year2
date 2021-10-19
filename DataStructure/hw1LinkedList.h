@@ -94,6 +94,7 @@ class peopleLinkedList // circular linked list
 {
 private:
     people *first;
+
 public:
     people *createCircularLinkedList(int N)
     {
