@@ -4,6 +4,8 @@
 #define pre Preorder
 #define in_start inorder_start
 #define in_end inorder_end
+
+static int pre_idx = 0;
 typedef struct _NODE
 {
     int number;
@@ -32,18 +34,14 @@ Node *buildTree(int *Inorder, int *Preorder, int inorder_start, int inorder_end)
     // preorder:x 2 3 4 5 6 7 8 9
     // inorder:5 3 2 x 4 7 6 8 9
     //        i_s    p          i_e
-    static int pre_idx = 0;
+
     Node *root = newNode(pre[pre_idx++]);
     if (in_start > in_end)
         return NULL; // false input
 
     int in_idx = idxSearch(in, in_start, in_end, root->number);
-
-    if (in_start <= in_end) // found x main function
-    {
-        root->ptr_to_left_node = buildTree(in, pre, in_start, in_idx - 1);
-        root->ptr_to_right_node = buildTree(in, pre, in_idx + 1, in_end);
-    }
+    root->ptr_to_left_node = buildTree(in, pre, in_start, in_idx - 1);
+    root->ptr_to_right_node = buildTree(in, pre, in_idx + 1, in_end);
     return root;
 }
 void showPostorder(Node *root)
@@ -57,6 +55,7 @@ void showPostorder(Node *root)
 
 void freeTree(Node *root)
 {
+    pre_idx = 0;
     if (root != NULL)
     {
         freeTree(root->ptr_to_left_node);

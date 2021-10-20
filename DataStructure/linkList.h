@@ -6,7 +6,7 @@ using namespace std;
 class NodeLink;
 class Node;
 
-typedef class Node
+class Node
 {
 private:
     int data;
@@ -24,9 +24,9 @@ public:
         next = NULL;
     }
     friend class NodeLink;
-} Node;
+};
 
-typedef class NodeLink // singular linked list
+class NodeLink // singular linked list
 {
 private:
     Node *first;
@@ -114,4 +114,4 @@ public:
         newN->next = cur->next;
         cur->next = newN;
     }
-} NodeLink;
+};
