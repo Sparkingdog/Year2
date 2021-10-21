@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 
 typedef struct _Node
 {
@@ -9,14 +7,13 @@ typedef struct _Node
 
 Node *createList(int n)
 {
-    Node *head = (Node *)malloc(sizeof(Node));
-    Node *cur = head;
-    head->id = 1;
+    Node *head = malloc(sizeof(Node)), *cur = head;
+    head->number = 1;
     head->next = head;
     for (int i = 2; i <= n; i++)
     {
-        Node *newN = (Node *)malloc(sizeof(Node));
-        newN->id = i;
+        Node *newN = malloc(sizeof(Node));
+        newN->number = i;
         newN->next = head;
         cur->next = newN;
         cur = newN;
@@ -26,36 +23,33 @@ Node *createList(int n)
 
 void freeList(Node *head)
 {
-    Node *cur = head;
-    while (cur->next != head)
+    while (head->next != head)
     {
-        Node *tmp = cur;
-        cur = cur->next;
+        Node *tmp = head->next;
+        head->next = head->next->next;
         free(tmp);
     }
     free(head);
 }
 
-int solveJoseph(Node **head, int step)
+int solveJosephus(Node **head, int step)
 {
     int length = 1;
     Node *count = (*head)->next;
-    while (count != *head) // count the length of circle every loop
+    while (count != *head)
         count = count->next, length++;
-    while (*head != (*head)->next) // left 1 people
+    while (*head != (*head)->next)
     {
-        int k = (step % length - 2 + length) % length; // real step (speed up algorithm)
-        while (k--)                                    // kill the people
-        {
+        int k = (step % length - 2 + length) % length;
+        for (int i = 0; i < k; i++)
             *head = (*head)->next;
-        }
         Node *tmp = (*head)->next;
         (*head)->next = (*head)->next->next;
         free(tmp);
-        *head = (*head)->next; // start another loop
+        *head = (*head)->next;
         length--;
     }
-    return (*head)->id;
+    return (*head)->number;
 }
 
 int main()
