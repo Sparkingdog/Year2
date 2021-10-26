@@ -9,12 +9,11 @@ class Node;
 NodeLink l;
 int main()
 {
-    l.pushBack(1);
+    l.pushBack(2);
     l.pushBack(3);
-    l.pushFront(9);
-    l.pushFront(10);
-    l.insertNPos(9, 88);
-    l.delNPos(10);
+    l.pushFront(1);
+    // l.insertNPos(9, 88);
+    l.delNPos(1);
     l.printList();
     return 0;
 }

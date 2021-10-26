@@ -51,5 +51,5 @@ private:
 
 public:
     card card;
-    people *buildPeople(int n);
+    people *buildPlayers(int n);
 };
