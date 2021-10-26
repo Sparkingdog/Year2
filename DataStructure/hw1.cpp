@@ -1,3 +1,4 @@
+//6/6 correct answer
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -58,7 +59,14 @@ void printDeck(deck *first)
     deck *cur = first;
     while (cur != NULL)
     {
-        cout << cur->data << " ";
+        if (cur->next != NULL)
+        {
+            cout << cur->data << " ";
+        }
+        else if (cur->next == NULL)
+        {
+            cout << cur->data;
+        }
         cur = cur->next;
     }
     printf("\n");
@@ -175,5 +183,6 @@ int main()
          printDeck(cur->d);
          cur = cur->next;
      } while (cur != players); // traverse through all player */
+
     return 0;
 }
