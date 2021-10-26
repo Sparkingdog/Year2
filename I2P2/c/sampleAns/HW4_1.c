@@ -11,7 +11,6 @@ int check(int idex)
             return 0;
     return 1;
 }
-
 int main()
 {
     while (~scanf("%s%s", S, p))
