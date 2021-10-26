@@ -58,10 +58,10 @@ void printDeck(deck *first)
     deck *cur = first;
     while (cur != NULL)
     {
-        cout << cur->data << "->";
+        cout << cur->data << " ";
         cur = cur->next;
     }
-    printf("NULL\n");
+    printf("\n");
 }
 
 int delNpos(deck **first, int n)
@@ -89,6 +89,11 @@ int delNpos(deck **first, int n)
 }
 void insNpos(deck **first, int n, int x)
 {
+    if (*first == NULL)
+    {
+        *first = new deck(x);
+        return;
+    }
     deck *cur = *first;
     if (n == 1)
     {
@@ -112,6 +117,16 @@ void drawNextCard(people *player, int idxDraw, int idxPlace)
     insNpos(&player->d, idxPlace, del);
 }
 
+bool hasJoker(deck *first)
+{
+    while (first != NULL)
+    {
+        if (first->data < 0)
+            return true; // has joker
+        first = first->next;
+    }
+    return false;
+}
 int main()
 {
     people *players; // pointer to first player
@@ -120,22 +135,18 @@ int main()
     int joker;
     //  N player M cards K joker cards
     cin >> N >> M >> K;
-    players = buildPlayers(N, M);
+    players = buildPlayers(N, M); // build player singly chain linked list
     people *cur = players;
-    /*  while (K--) // insert joker
-     {
-         cin >> joker;
-         cur = players;
-         while (N--) // check if id == joker
-         {
-             if (cur->id == joker)
-             {
-                 cur->d->data = -999; // joker
-                 break;
-             }
-             cur = cur->next;
-         }
-     } */
+    while (K--) // insert joker
+    {
+        cin >> joker;
+        cur = players;  // redirect to first
+        while (--joker) // check if id == joker
+        {
+            cur = cur->next;
+        }
+        cur->d->data = -999; // joker
+    }
     people *ptr = players;
     while (cin >> a >> b)
     {
@@ -148,11 +159,21 @@ int main()
         ptr = ptr->next;
     }
     cur = players;
-    do // point to first player
+    do
     {
-        cout << "player " << cur->id << ":";
-        printDeck(cur->d);
+        if (hasJoker(cur->d) == false) // no joker
+        {
+            printDeck(cur->d);
+            break;
+        }
         cur = cur->next;
-    } while (cur != players); // traverse through all player
+    } while (cur != players);
+
+    /*  do // point to first player
+     {
+         cout << "player " << cur->id << ":";
+         printDeck(cur->d);
+         cur = cur->next;
+     } while (cur != players); // traverse through all player */
     return 0;
 }
