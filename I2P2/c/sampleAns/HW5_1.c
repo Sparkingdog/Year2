@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #define right ptr_to_right_node
 #define left ptr_to_left_node
 #define num number
