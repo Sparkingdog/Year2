@@ -1,6 +1,6 @@
 /* C++ program to implement basic stack
    operations */
-//stack with array
+// stack with array
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -67,7 +67,6 @@ bool Stack::isEmpty()
 {
     return (top < 0);
 }
-
 // Driver program to test above functions
 int main()
 {
@@ -76,7 +75,7 @@ int main()
     s.push(20);
     s.push(30);
     cout << s.pop() << " Popped from stack\n";
-    //print all elements in stack :
+    // print all elements in stack :
     cout << "Elements present in stack : ";
     while (!s.isEmpty())
     {
