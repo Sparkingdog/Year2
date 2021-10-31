@@ -24,11 +24,11 @@ typedef struct _Node
 BTNode *EXPR();
 BTNode *FACTOR();
 /* create a node without any child.*/
-BTNode *makeNode(char c)
+BTNode *makeNode(char c) // make a leaf node
 {
     int i;
     BTNode *node = (BTNode *)malloc(sizeof(BTNode));
-    for (i = 0; (unsigned int)i < strlen(sym); i++)
+    for (i = 0; (unsigned int)i < strlen(sym); i++) // search for token set
         if (c == sym[i])
             node->data = i;
     node->left = NULL;
@@ -56,7 +56,13 @@ void printPrefix(BTNode *root)
     }
 }
 /* FACTOR = VAR | (EXPR) */
-BTNode *FACTOR()
+/* parsing expr = factor | expr op FACTOR
+1.  Find a factor from the end of expression
+2.  If there is an OP in front of the FACTOR
+2.1 Let factor be OP's right child
+2.2 Parse the remaining expression recursively and make it OP's left child
+ */
+BTNode *FACTOR()//Alphabet or parenthesis
 {
     char c;
     BTNode *node = NULL;
@@ -65,13 +71,14 @@ BTNode *FACTOR()
         c = expr[pos--];
         if (c >= 'A' && c <= 'D')
         { // apply the rule FACTOR = VAR
-            // make a new node for VAR
-            ? ? ?
+          // make a new node for VAR
+            node = makeNode(c);
         }
         else if (c == ')')
         { // apply the rule FACTOR = (EXPR)
             // get the node pointer from recusive call of EXPR()
-            ? ? ? if (expr[pos--] != '(')
+            node = EXPR();
+            if (expr[pos--] != '(')
             { // the left parenthesis is needed
                 printf("Error: not matching parenthesis!\n");
                 freeTree(node);
@@ -82,30 +89,33 @@ BTNode *FACTOR()
 }
 /* parse an infix expression and generate a syntax tree.
 EXPR = FACTOR| EXPR OP FACTOR */
+// rules
 BTNode *EXPR()
 {
     char c;
     BTNode *node = NULL, *right = NULL;
     if (pos >= 0)
     { // if the expression has length > 1.
-        // get the pointer to the right child from calling the function
-        FACTOR()
-        right = ? ? ? if (pos > 0)
+        // get the pointer to the right child from calling the function FACTOR()
+        right = FACTOR();
+        if (pos > 0)
         {
             c = expr[pos];
             if (c == '&' || c == '|')
             { // apply the rule EXPR = EXPR OP FACTOR
                 // make a new node for the OP
-                node = ? ? ?
-                           // set the node's right child as ...
-                    node->right = ? ? ? pos--; // this step is important
+                node = makeNode(c);
+                // set the node's right child as ...
+                node->right = right;
+                pos--; // this step is important
                 // set the node's left child from recursive call of EXPR()
-                node->left = ? ? ?
+                node->left = EXPR();
             }
             else
                 node = right; // apply the rule EXPR = FACTOR
         }
-        else node = right; // apply the rule EXPR = FACTOR
+        else
+            node = right; // apply the rule EXPR = FACTOR
     }
     return node;
 }
@@ -119,9 +129,10 @@ int main(void)
         --len;
         expr[len] = '\0';
     }
-    pos = strlen(expr) - 1;
-    BTNode *root = EXPR();
-    printPrefix(root);
-    freeTree(root);
+    pos = strlen(expr) - 1; // start from right to left
+    BTNode *root = EXPR();  // build syntax tree
+    printPrefix(root);      // print tree
+    freeTree(root);         // free tree
     return 0;
 }
+// A&(B|C)
