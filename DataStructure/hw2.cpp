@@ -3,58 +3,58 @@
 #define ll long
 using namespace std;
 
-class Stack
-{
-private:
-    int top;
+// class Stack
+// {
+// private:
+//     int top;
 
-public:
-    int a[max];
-    Stack() { top = 0; }
-    void push(ll x);
-    int pop();
-    int peek();
-    bool isEmpty();
-};
+// public:
+//     int a[max];
+//     Stack() { top = 0; }
+//     void push(ll x);
+//     int pop();
+//     int peek();
+//     bool isEmpty();
+// };
 
-bool Stack::isEmpty()
-{
-    return (top < 1);
-}
-void Stack::push(ll x)
-{
-    if (top >= (max - 1))
-        return;
+// bool Stack::isEmpty()
+// {
+//     return (top < 1);
+// }
+// void Stack::push(ll x)
+// {
+//     if (top >= (max - 1))
+//         return;
 
-    else
-    {
-        a[++top] = x;
-    }
-}
-int Stack::pop()
-{
-    if (top < 1)
-    {
-        return 0;
-    }
-    else
-    {
-        int x = a[top--];
-        return x;
-    }
-}
-int Stack::peek()
-{
-    if (top < 1)
-    {
-        return 0;
-    }
-    else
-    {
-        int x = a[top];
-        return x;
-    }
-}
+//     else
+//     {
+//         a[++top] = x;
+//     }
+// }
+// int Stack::pop()
+// {
+//     if (top < 1)
+//     {
+//         return 0;
+//     }
+//     else
+//     {
+//         int x = a[top--];
+//         return x;
+//     }
+// }
+// int Stack::peek()
+// {
+//     if (top < 1)
+//     {
+//         return 0;
+//     }
+//     else
+//     {
+//         int x = a[top];
+//         return x;
+//     }
+// }
 int main()
 {
     int n;
@@ -75,10 +75,8 @@ int main()
                 cout << j << " ";
                 break;
             }
-            if (j == 1 && i != n)
+            if (j == 1)
                 cout << 0 << " ";
-            else if (j == 1 && i == n)
-                cout << 0;
         }
     }
     cout << endl;
