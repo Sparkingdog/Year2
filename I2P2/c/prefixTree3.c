@@ -7,15 +7,15 @@ char expr[MAXEXPR];
 int pos;
 typedef enum
 {
-    VAR_A,
-    VAR_B,
-    VAR_C,
-    VAR_D,
-    OP_AND,
-    OP_OR,
-    END
+    VAR_A,  // 0
+    VAR_B,  // 1
+    VAR_C,  // 2
+    VAR_D,  // 3
+    OP_AND, // 4
+    OP_OR,  // 5
+    END     // 6
 } TokenSet;
-char sym[] = "ABCD&|()";
+char sym[] = "ABCD&|()"; // 0,1,2,3,4,5,6
 typedef struct _Node
 {
     TokenSet data;
