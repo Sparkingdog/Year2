@@ -62,7 +62,7 @@ void printPrefix(BTNode *root)
 2.1 Let factor be OP's right child
 2.2 Parse the remaining expression recursively and make it OP's left child
  */
-BTNode *FACTOR()//Alphabet or parenthesis
+BTNode *FACTOR() // Alphabet or parenthesis
 {
     char c;
     BTNode *node = NULL;
@@ -135,4 +135,5 @@ int main(void)
     freeTree(root);         // free tree
     return 0;
 }
-// A&(B|C)
+// A&(B|C) infix to prefix
+// give infix build syntax tree
