@@ -1,13 +1,12 @@
 /* C++ program to implement basic stack
    operations */
 // stack with array
+#pragma once
 #include <bits/stdc++.h>
-
 using namespace std;
-
 #define MAX 1000
 
-class Stack
+typedef class Stack
 {
     int top;
 
@@ -19,7 +18,7 @@ public:
     int pop();
     int peek();
     bool isEmpty();
-};
+} Stack;
 
 bool Stack::push(int x)
 {
@@ -49,7 +48,7 @@ int Stack::pop()
         return x;
     }
 }
-int Stack::peek()
+int Stack::peek() // return the top value
 {
     if (top < 0)
     {
@@ -68,7 +67,7 @@ bool Stack::isEmpty()
     return (top < 0);
 }
 // Driver program to test above functions
-int main()
+/* int main()
 {
     class Stack s;
     s.push(10);
@@ -86,4 +85,4 @@ int main()
     }
 
     return 0;
-}
+} */
