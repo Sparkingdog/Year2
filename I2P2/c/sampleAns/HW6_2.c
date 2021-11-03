@@ -46,12 +46,12 @@ void eat_rat(Node **root, int x)
     }
     if ((*root) == NULL)
         return;
-    if (!(*root)->L && !(*root)->R)
+    if (!(*root)->L && !(*root)->R) //no leaf
     {
         free(*root);
         (*root) = NULL;
     }
-    else if ((*root)->L && (*root)->R)
+    else if ((*root)->L && (*root)->R) //two leaf
     {
         Node **l = &((*root)->L);
         while ((*l)->R)
@@ -59,7 +59,7 @@ void eat_rat(Node **root, int x)
         (*root)->level = (*l)->level;
         eat_rat(l, (*l)->level);
     }
-    else
+    else //one leaf one null
     {
         Node *now = (*root)->L ? (*root)->L : (*root)->R;
         free(*root);

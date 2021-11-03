@@ -1,0 +1,22 @@
+#include <algorithm>
+#include <cctype>
+#include <iostream>
+#include <iterator>
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+using std::cin;
+using std::copy;
+using std::cout;
+using std::endl;
+using std::isspace;
+using std::ostream_iterator;
+using std::pair;
+using std::runtime_error;
+using std::stack;
+using std::string;
+using std::stringstream;
+using std::vector;
