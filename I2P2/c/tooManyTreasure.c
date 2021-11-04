@@ -1,12 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-int maxTreasure(int *arr, int l, int r, int m)
+int sum_LtoR(int *arr, int l, int r)
 {
     int res = 0;
-    do
-    {
-        res += arr[l++];
-    } while (--m);
+    res = arr[r] - arr[l - 1];
 
     if (res < 0)
     {
@@ -21,18 +18,21 @@ int main()
 {
     int n, q;
     int l, r, m;
-    int arr[1000001];
-    // int prefixsum[1000001];
+    int arr[100000];
+    int ans, ans2, range;
     scanf("%d%d", &n, &q);
     for (int i = 1; i <= n; i++)
     {
         scanf("%d", &arr[i]);
-        // prefixsum[i] += arr[i];
+        if (arr[i] < 0)
+            arr[i] = 0;
+        arr[i] += arr[i - 1];
     }
     while (q--)
     {
         scanf("%d%d%d", &l, &r, &m);
-        printf("%d\n", maxTreasure(arr, l, r, m));
+        ans = sum_LtoR(arr, l, l + m - 1); //1-4
+        printf("%d\n", ans);
     }
 }
 /* 5 5
