@@ -44,6 +44,7 @@
         "xutility": "cpp",
         "queue": "cpp",
         "stack": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "valarray": "c"
     }
 }
