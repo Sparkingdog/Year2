@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+// *reviewed
 int n, q;
 int bridge[(int)2e6 + 1];
-int BS(int x)
+int BS(int x)//! Binary search Tree
 {
     int L = 0, R = n, ans = 0;
-    while (L < R) //while l!=r
+    while (L < R) // while l!=r
     {
-        int M = (L + R) / 2; //middle index of array
+        int M = (L + R) / 2; // middle index of array
         if (bridge[M] > x)
             R = M;
         else
@@ -29,8 +30,8 @@ int main()
         {
             int query;
             scanf("%d", &query);
-            int ans = BS(query); //binary search
-            if (ans)             //found
+            int ans = BS(query); // binary search
+            if (ans)             // found
                 printf("%d\n", ans);
             else
                 printf("Break your bridge!\n");

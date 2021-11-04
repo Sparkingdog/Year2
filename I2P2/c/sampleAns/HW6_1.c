@@ -1,8 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #define MAX_N 103
 
-enum {VAL, ID, OP};
+enum
+{
+    VAL,
+    ID,
+    OP
+};
 typedef struct _Node
 {
     struct _Node *l, *r;
@@ -12,7 +18,7 @@ typedef struct _Node
 } Node;
 Node *new_Node(int type, int val, char op_id)
 {
-    Node *res = (Node*)malloc(sizeof(Node));
+    Node *res = (Node *)malloc(sizeof(Node));
     res->l = res->r = NULL;
     res->type = type;
     res->val = val;
@@ -26,10 +32,14 @@ Node *build_tree()
 {
     scanf("%s", in);
     Node *now;
-    if('0'<=in[0] && in[0]<='9') now = new_Node(VAL, atoi(in), '\0');
-    else if('x'<=in[0] && in[0]<='z') now = new_Node(ID, 0, in[0]);
-    else now = new_Node(OP, 0, in[0]);
-    if(now->type != OP) return now;
+    if (isdigit(in[0]))
+        now = new_Node(VAL, atoi(in), '\0');
+    else if (isalpha(in[0]))
+        now = new_Node(ID, 0, in[0]);
+    else
+        now = new_Node(OP, 0, in[0]);
+    if (now->type != OP)
+        return now;
     now->l = build_tree();
     now->r = build_tree();
     return now;
@@ -37,27 +47,33 @@ Node *build_tree()
 int show_inorder(Node *now)
 {
     int l, r;
-    switch(now->type)
+    switch (now->type)
     {
-        case VAL:
-            printf("%d", now->val);
-            return now->val;
-        case ID:
-            printf("%c", now->op_id);
-            return ids[now->op_id-'x'];
-        case OP:
-            l = show_inorder(now->l);
-            printf("%c", now->op_id);
-            r = show_inorder(now->r);
-            switch(now->op_id)
-            {
-                case '+': return l + r;
-                case '-': return l - r;
-                case '*': return l * r;
-                case '/': return l / r;
-                default: exit(1);
-            }
-        default: exit(1);
+    case VAL:
+        printf("%d", now->val);
+        return now->val;
+    case ID:
+        printf("%c", now->op_id);
+        return ids[now->op_id - 'x'];
+    case OP:
+        l = show_inorder(now->l);
+        printf("%c", now->op_id);
+        r = show_inorder(now->r);
+        switch (now->op_id)
+        {
+        case '+':
+            return l + r;
+        case '-':
+            return l - r;
+        case '*':
+            return l * r;
+        case '/':
+            return l / r;
+        default:
+            exit(1);
+        }
+    default:
+        exit(1);
     }
 }
 

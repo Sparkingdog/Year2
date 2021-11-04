@@ -1,5 +1,6 @@
 #include <stdio.h>
 #define LL long long int
+// *reviewed
 LL prefix[(int)2e6 + 1];
 int n, q;
 int main()
@@ -18,16 +19,16 @@ int main()
             scanf("%d%d", &a, &b);
             if (a <= b)
             {
-                if (ans < prefix[b] - prefix[a - 1])
+                if (ans < prefix[b] - prefix[a - 1]) // if ans(max) less than b
                 {
                     ansa = a;
                     ansb = b;
                     ans = prefix[b] - prefix[a - 1];
                 }
             }
-            else
+            else // a>b
             {
-                if (ans < prefix[b] + prefix[n] - prefix[a - 1])
+                if (ans < prefix[b] + prefix[n] - prefix[a - 1]) // prefix b + prefix a~n
                 {
                     ansa = a;
                     ansb = b;

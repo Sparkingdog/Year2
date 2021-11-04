@@ -24,7 +24,8 @@ void build_tree(Node **now, int *arr, int l, int r)
     build_tree(&((*now)->L), arr, l, mid - 1);
     build_tree(&((*now)->R), arr, mid + 1, r);
 }
-int query_heatstroke(Node *now, int x)
+
+int query_heatstroke(Node *now, int x)//search num in BST tree
 {
     if (now == NULL)
         return 0;
@@ -32,34 +33,34 @@ int query_heatstroke(Node *now, int x)
         return query_heatstroke(now->L, x);
     else if (now->level < x)
         return query_heatstroke(now->R, x);
-    else
-        return 1;
+    else          // now->level == x
+        return 1; // yay found~~
 }
-void eat_rat(Node **root, int x)
+void eat_rat(Node **root, int x) // delete a node from a BST tree
 {
-    while ((*root) != NULL && (*root)->level != x)
+    while ((*root) != NULL && (*root)->level != x)//found
     {
         if ((*root)->level > x)
             root = &((*root)->L);
         if ((*root)->level < x)
             root = &((*root)->R);
     }
-    if ((*root) == NULL)
+    if ((*root) == NULL)//null
         return;
-    if (!(*root)->L && !(*root)->R) //no leaf
+    if (!(*root)->L && !(*root)->R) // no leaf
     {
         free(*root);
         (*root) = NULL;
     }
-    else if ((*root)->L && (*root)->R) //two leaf
+    else if ((*root)->L && (*root)->R) // two leaf
     {
         Node **l = &((*root)->L);
-        while ((*l)->R)
+        while ((*l)->R)//go to the right
             l = &((*l)->R);
         (*root)->level = (*l)->level;
         eat_rat(l, (*l)->level);
     }
-    else //one leaf one null
+    else // one leaf one null
     {
         Node *now = (*root)->L ? (*root)->L : (*root)->R;
         free(*root);
