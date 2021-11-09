@@ -10,7 +10,7 @@ int idxSearch(int *inorder, int strt, int end, int value)
     for (i = strt; i <= end; i++)
     {
         if (inorder[i] == value)
-            return i;
+            return i;//return index
     }
 }
 typedef struct _NODE
