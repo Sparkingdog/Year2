@@ -1,0 +1,5 @@
+money = input("How much money do you have?")
+expense = input("Add an expense or income record with discription and amount:")
+expense = expense.split()
+total = int(money) + int(expense[1])
+print(f"Now you have {total} dollars.")
