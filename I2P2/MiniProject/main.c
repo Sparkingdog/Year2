@@ -118,7 +118,7 @@ int main()
         semantic_check(ast_root);
         printf("codegen: \n");
         codegen(ast_root);
-        printf("Print Token: \n");
+        printf("\nPrint Token: \n");
         token_print(content, len); // print token
         printf("Print Tree: \n");
         AST_print(ast_root); // print tree
@@ -402,18 +402,13 @@ void semantic_check(AST *now)
 
 void codegen(AST *root)
 {
-    static char indent_str[MAX_LENGTH] = "";
-    static int indent = 0;
-    char *indent_now = indent_str + indent;
+    static int i;
+    static int reg[9];
+    int l, r;
     const static char KindName[][20] = {
-        "Assign", "Add", "Sub", "Mul", "Div", "Rem", "PreInc", "PreDec", "PostInc", "PostDec", "Identifier", "Constant", "Parentheses", "Parentheses", "Plus", "Minus"};
+        "=", "+", "-", "Mul", "Div", "Rem", "PreInc", "PreDec", "PostInc", "PostDec", "Identifier", "Constant", "Parentheses", "Parentheses", "Plus", "Minus"};
     if (root == NULL)
         return;
-    indent_str[indent - 1] = '-';
-    printf("%s", indent_str);
-    indent_str[indent - 1] = ' ';
-    if (indent_str[indent - 2] == '`')
-        indent_str[indent - 2] = ' ';
     switch (root->kind)
     {
     case ASSIGN:
@@ -430,25 +425,51 @@ void codegen(AST *root)
     case RPAR:
     case PLUS:
     case MINUS:
-        printf("%s", KindName[root->kind]);
+        //OP
+        switch (root->kind)
+        {
+        case ADD:
+            //left
+            if (root->lhs->kind == IDENTIFIER) //id
+            {
+                reg[i] = (root->lhs->val - 120) * 4;
+                printf("load r%d [%d]\n", reg[i++], (root->lhs->val - 120) * 4);
+                l = (root->lhs->val - 120) * 4;
+            }
+            else
+            {
+                reg[i] = root->lhs->val;
+                printf("add r%d %d\n", reg[i++], root->lhs->val);
+                l = root->lhs->val;
+            }
+            //right
+            if (root->rhs->kind == IDENTIFIER) //id
+            {
+                reg[i] = (root->rhs->val - 120) * 4;
+                printf("load r%d [%d]\n", reg[i++], (root->rhs->val - 120) * 4);
+                r = (root->rhs->val - 120) * 4;
+            }
+            else
+            {
+                reg[i] = root->rhs->val;
+                printf("add r%d %d\n", reg[i++], root->rhs->val);
+                r = root->rhs->val;
+            }
+        }
+        // printf("%s ", KindName[root->kind]);
         break;
     case IDENTIFIER:
-        printf("%s", (char *)&(root->val)); // x,y,z
+        printf("load r%d [%s]\n", i++, (char *)&(root->val));
         break;
     case CONSTANT:
-        printf("%d", root->val);
+        printf("%d ", root->val);
         break;
     default:
-        puts("=== unknown AST type ===");
+        puts("unknown type");
     }
-    indent += 2;
-    strcpy(indent_now, "| ");
-    AST_print(root->lhs);
-    strcpy(indent_now, "` ");
-    AST_print(root->mid);
-    AST_print(root->rhs);
-    indent -= 2;
-    (*indent_now) = '\0';
+    codegen(root->lhs);
+    //inorder
+    codegen(root->rhs);
     // TODO: Implement your codegen in your own way.
     // You may modify the function parameter or the return type, even the whole structure as you wish.
 }
