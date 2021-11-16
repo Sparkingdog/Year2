@@ -117,6 +117,10 @@ int main()
         AST *ast_root = parser(content, len);
         semantic_check(ast_root);
         codegen(ast_root);
+        printf("Print Token: \n");
+        token_print(content, len); // print token
+        printf("Print Tree: \n");
+        AST_print(ast_root); // print tree
         free(content);
         freeAST(ast_root);
     }
@@ -262,7 +266,7 @@ AST *parse(Token *arr, int l, int r, GrammarState S)
     case EXPR:
         return parse(arr, l, r, ASSIGN_EXPR);
     case ASSIGN_EXPR:
-        if ((nxt = findNextSection(arr, l, r, condASSIGN)) != -1) //found
+        if ((nxt = findNextSection(arr, l, r, condASSIGN)) != -1) // found
         {
             now = new_AST(arr[nxt].kind, 0);
             now->lhs = parse(arr, l, nxt - 1, UNARY_EXPR);
@@ -271,7 +275,7 @@ AST *parse(Token *arr, int l, int r, GrammarState S)
         }
         return parse(arr, l, r, ADD_EXPR);
     case ADD_EXPR:
-        if ((nxt = findNextSection(arr, r, l, condADD)) != -1) //found
+        if ((nxt = findNextSection(arr, r, l, condADD)) != -1) // found
         {
             now = new_AST(arr[nxt].kind, 0);
             now->lhs = parse(arr, l, nxt - 1, ADD_EXPR);
@@ -280,9 +284,23 @@ AST *parse(Token *arr, int l, int r, GrammarState S)
         }
         return parse(arr, l, r, MUL_EXPR);
     case MUL_EXPR:
+        if ((nxt = findNextSection(arr, r, l, condMUL)) != -1) // found
+        {
+            now = new_AST(arr[nxt].kind, 0);
+            now->lhs = parse(arr, l, nxt - 1, MUL_EXPR);
+            now->rhs = parse(arr, nxt + 1, r, UNARY_EXPR);
+            return now;
+        }
+        return parse(arr, l, r, UNARY_EXPR);
+        //! DONE
         // TODO: Implement MUL_EXPR.
         // hint: Take ADD_EXPR as reference.
     case UNARY_EXPR:
+        if (arr[r].kind == PREINC || arr[r].kind == PREDEC)
+        {
+            now->mid = parse(arr, l, r - 1, UNARY_EXPR);
+        }
+        return parse(arr, l, r, POSTFIX_EXPR);
         // TODO: Implement UNARY_EXPR.
         // hint: Take POSTFIX_EXPR as reference.
     case POSTFIX_EXPR:
@@ -379,6 +397,10 @@ void semantic_check(AST *now)
 
 void codegen(AST *root)
 {
+    switch(root->kind)
+    {
+        case 
+    }
     // TODO: Implement your codegen in your own way.
     // You may modify the function parameter or the return type, even the whole structure as you wish.
 }
