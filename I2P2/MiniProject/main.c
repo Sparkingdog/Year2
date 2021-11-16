@@ -5,7 +5,7 @@
 
 /*
 For the language grammar, please refer to Grammar section on the github page:
-  https://github.com/lightbulb12294/CSI2P-II-Mini1#grammar
+https://github.com/lightbulb12294/CSI2P-II-Mini1#grammar
 */
 
 #define MAX_LENGTH 200
@@ -118,10 +118,6 @@ int main()
         semantic_check(ast_root);
         printf("codegen: \n");
         codegen(ast_root);
-        printf("\nPrint Token: \n");
-        token_print(content, len); // print token
-        printf("Print Tree: \n");
-        AST_print(ast_root); // print tree
         free(content);
         freeAST(ast_root);
     }
@@ -297,11 +293,12 @@ AST *parse(Token *arr, int l, int r, GrammarState S)
         // TODO: Implement MUL_EXPR.
         // hint: Take ADD_EXPR as reference.
     case UNARY_EXPR:
-        if (arr[r].kind == PREINC || arr[r].kind == PREDEC)
+        if (arr[l].kind == PREINC || arr[l].kind == PREDEC)
         {
-            now->mid = parse(arr, l, r - 1, UNARY_EXPR);
+            now->mid = parse(arr, l + 1, r, UNARY_EXPR);
         }
         return parse(arr, l, r, POSTFIX_EXPR);
+        //! MAYBE DONE?
         // TODO: Implement UNARY_EXPR.
         // hint: Take POSTFIX_EXPR as reference.
     case POSTFIX_EXPR:
@@ -391,10 +388,43 @@ void semantic_check(AST *now)
             err("Lvalue is required as left operand of assignment.");
     }
     //
-    if (now->kind == PREDEC || now->kind == PREINC || now->kind == POSTINC || now->kind == POSTDEC)
+    if (now->kind == ASSIGN)
     {
+        AST *check_l = now->lhs;
+        if (check_l->kind != POSTINC || check_l->kind != POSTDEC || check_l->kind != PREDEC || check_l->kind != PREINC)
+        {
+            if (check_l == NULL)
+                return;
+            else
+            {
+                semantic_check(check_l->lhs);
+                semantic_check(check_l->rhs);
+            }
+        }
+        else
+        {
+            if (check_l->lhs->kind != IDENTIFIER || check_l->rhs->kind != IDENTIFIER)
+                err("Operand of INC/DEC must be an identifier or identifier with one or more parentheses.")
+        }
+        AST *check_r = now->rhs;
+        if (check_r->kind != POSTINC || check_r->kind != POSTDEC || check_r->kind != PREDEC || check_r->kind != PREINC)
+        {
+            if (check_r == NULL)
+                return;
+            else
+            {
+                semantic_check(check_r->lhs);
+                semantic_check(check_r->rhs);
+            }
+        }
+        else
+        {
+            if (check_r->lhs->kind != IDENTIFIER || check_r->rhs->kind != IDENTIFIER)
+                err("Operand of INC/DEC must be an identifier or identifier with one or more parentheses.");
+        }
     }
     // Operand of INC/DEC must be an identifier or identifier with one or more parentheses.
+    //! Done??
     // TODO: Implement the remaining semantic_check code.
     // hint: Follow the instruction above and ASSIGN-part code to implement.
     // hint: Semantic of each node needs to be checked recursively (from the current node to lhs/mid/rhs node).
@@ -425,36 +455,37 @@ void codegen(AST *root)
     case RPAR:
     case PLUS:
     case MINUS:
-        //OP
+        // OP
         switch (root->kind)
         {
         case ADD:
-            //left
-            if (root->lhs->kind == IDENTIFIER) //id
+            // left
+            if (root->lhs->kind == IDENTIFIER) // id
             {
                 reg[i] = (root->lhs->val - 120) * 4;
                 printf("load r%d [%d]\n", reg[i++], (root->lhs->val - 120) * 4);
                 l = (root->lhs->val - 120) * 4;
             }
-            else
+            else if (root->lhs->kind == CONSTANT)
             {
                 reg[i] = root->lhs->val;
                 printf("add r%d %d\n", reg[i++], root->lhs->val);
                 l = root->lhs->val;
             }
-            //right
-            if (root->rhs->kind == IDENTIFIER) //id
+            // right
+            if (root->rhs->kind == IDENTIFIER) // id
             {
                 reg[i] = (root->rhs->val - 120) * 4;
                 printf("load r%d [%d]\n", reg[i++], (root->rhs->val - 120) * 4);
                 r = (root->rhs->val - 120) * 4;
             }
-            else
+            else if (root->rhs->kind == CONSTANT)
             {
                 reg[i] = root->rhs->val;
                 printf("add r%d %d\n", reg[i++], root->rhs->val);
                 r = root->rhs->val;
             }
+            break;
         }
         // printf("%s ", KindName[root->kind]);
         break;
@@ -468,7 +499,7 @@ void codegen(AST *root)
         puts("unknown type");
     }
     codegen(root->lhs);
-    //inorder
+    // inorder
     codegen(root->rhs);
     // TODO: Implement your codegen in your own way.
     // You may modify the function parameter or the return type, even the whole structure as you wish.
