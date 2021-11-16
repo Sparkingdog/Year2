@@ -73,7 +73,7 @@ Token *lexer(const char *in);
 // Create a new token.
 Token *new_token(Kind kind, int val);
 // Translate a token linked list into array, return its length.
-size_t token_list_to_arr(Token **head);
+size_t token_list_to_arr(Token **root);
 // Parse the token array. Return the constructed AST.
 AST *parser(Token *arr, size_t len);
 // Parse the token array. Return the constructed AST.
@@ -102,7 +102,7 @@ void freeAST(AST *now);
 // Print token array.
 void token_print(Token *in, size_t len);
 // Print AST tree.
-void AST_print(AST *head);
+void AST_print(AST *root);
 
 char input[MAX_LENGTH];
 
@@ -116,6 +116,7 @@ int main()
             continue;
         AST *ast_root = parser(content, len);
         semantic_check(ast_root);
+        printf("codegen: \n");
         codegen(ast_root);
         printf("Print Token: \n");
         token_print(content, len); // print token
@@ -129,8 +130,8 @@ int main()
 
 Token *lexer(const char *in)
 {
-    Token *head = NULL;
-    Token **now = &head;
+    Token *root = NULL;
+    Token **now = &root;
     for (int i = 0; in[i]; i++)
     {
         if (isspace(in[i])) // ignore space characters
@@ -194,7 +195,7 @@ Token *lexer(const char *in)
             }
         now = &((*now)->next);
     }
-    return head;
+    return root;
 }
 
 Token *new_token(Kind kind, int val)
@@ -206,18 +207,18 @@ Token *new_token(Kind kind, int val)
     return res;
 }
 
-size_t token_list_to_arr(Token **head)
+size_t token_list_to_arr(Token **root)
 {
     size_t res;
-    Token *now = (*head), *del;
+    Token *now = (*root), *del;
     for (res = 0; now != NULL; res++)
         now = now->next;
-    now = (*head);
+    now = (*root);
     if (res != 0)
-        (*head) = (Token *)malloc(sizeof(Token) * res);
+        (*root) = (Token *)malloc(sizeof(Token) * res);
     for (int i = 0; i < res; i++)
     {
-        (*head)[i] = (*now);
+        (*root)[i] = (*now);
         del = now;
         now = now->next;
         free(del);
@@ -316,7 +317,7 @@ AST *parse(Token *arr, int l, int r, GrammarState S)
         if (findNextSection(arr, l, r, condRPAR) == r)
         {
             now = new_AST(LPAR, 0);
-            now->mid = parse(arr, l + 1, r - 1, EXPR);
+            now->mid = parse(arr, l + 1, r - 1, EXPR); // skip parrenthesis
             return now;
         }
         if (l == r)
@@ -389,6 +390,10 @@ void semantic_check(AST *now)
         if (tmp->kind != IDENTIFIER)
             err("Lvalue is required as left operand of assignment.");
     }
+    //
+    if (now->kind == PREDEC || now->kind == PREINC || now->kind == POSTINC || now->kind == POSTDEC)
+    {
+    }
     // Operand of INC/DEC must be an identifier or identifier with one or more parentheses.
     // TODO: Implement the remaining semantic_check code.
     // hint: Follow the instruction above and ASSIGN-part code to implement.
@@ -397,10 +402,53 @@ void semantic_check(AST *now)
 
 void codegen(AST *root)
 {
-    switch(root->kind)
+    static char indent_str[MAX_LENGTH] = "";
+    static int indent = 0;
+    char *indent_now = indent_str + indent;
+    const static char KindName[][20] = {
+        "Assign", "Add", "Sub", "Mul", "Div", "Rem", "PreInc", "PreDec", "PostInc", "PostDec", "Identifier", "Constant", "Parentheses", "Parentheses", "Plus", "Minus"};
+    if (root == NULL)
+        return;
+    indent_str[indent - 1] = '-';
+    printf("%s", indent_str);
+    indent_str[indent - 1] = ' ';
+    if (indent_str[indent - 2] == '`')
+        indent_str[indent - 2] = ' ';
+    switch (root->kind)
     {
-        case 
+    case ASSIGN:
+    case ADD:
+    case SUB:
+    case MUL:
+    case DIV:
+    case REM:
+    case PREINC:
+    case PREDEC:
+    case POSTINC:
+    case POSTDEC:
+    case LPAR:
+    case RPAR:
+    case PLUS:
+    case MINUS:
+        printf("%s", KindName[root->kind]);
+        break;
+    case IDENTIFIER:
+        printf("%s", (char *)&(root->val)); // x,y,z
+        break;
+    case CONSTANT:
+        printf("%d", root->val);
+        break;
+    default:
+        puts("=== unknown AST type ===");
     }
+    indent += 2;
+    strcpy(indent_now, "| ");
+    AST_print(root->lhs);
+    strcpy(indent_now, "` ");
+    AST_print(root->mid);
+    AST_print(root->rhs);
+    indent -= 2;
+    (*indent_now) = '\0';
     // TODO: Implement your codegen in your own way.
     // You may modify the function parameter or the return type, even the whole structure as you wish.
 }
@@ -456,7 +504,7 @@ void token_print(Token *in, size_t len)
     }
 }
 
-void AST_print(AST *head)
+void AST_print(AST *root)
 {
     static char indent_str[MAX_LENGTH] = "";
     static int indent = 0;
@@ -466,14 +514,14 @@ void AST_print(AST *head)
     const static char format[] = "%s\n";
     const static char format_str[] = "%s, <%s = %s>\n";
     const static char format_val[] = "%s, <%s = %d>\n";
-    if (head == NULL)
+    if (root == NULL)
         return;
     indent_str[indent - 1] = '-';
     printf("%s", indent_str);
     indent_str[indent - 1] = ' ';
     if (indent_str[indent - 2] == '`')
         indent_str[indent - 2] = ' ';
-    switch (head->kind)
+    switch (root->kind)
     {
     case ASSIGN:
     case ADD:
@@ -489,23 +537,23 @@ void AST_print(AST *head)
     case RPAR:
     case PLUS:
     case MINUS:
-        printf(format, KindName[head->kind]);
+        printf(format, KindName[root->kind]);
         break;
     case IDENTIFIER:
-        printf(format_str, KindName[head->kind], "name", (char *)&(head->val));
+        printf(format_str, KindName[root->kind], "name", (char *)&(root->val));
         break;
     case CONSTANT:
-        printf(format_val, KindName[head->kind], "value", head->val);
+        printf(format_val, KindName[root->kind], "value", root->val);
         break;
     default:
         puts("=== unknown AST type ===");
     }
     indent += 2;
     strcpy(indent_now, "| ");
-    AST_print(head->lhs);
+    AST_print(root->lhs);
     strcpy(indent_now, "` ");
-    AST_print(head->mid);
-    AST_print(head->rhs);
+    AST_print(root->mid);
+    AST_print(root->rhs);
     indent -= 2;
     (*indent_now) = '\0';
 }
