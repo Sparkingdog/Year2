@@ -54,8 +54,8 @@ int show_inorder(Node *now)
         return now->val;
     case ID:
         printf("%c", now->op_id);
-        return ids[now->op_id - 'x'];
-    case OP:
+        return ids[now->op_id - 'x'];//x:0,y:1,z:2
+    case OP://in_order
         l = show_inorder(now->l);
         printf("%c", now->op_id);
         r = show_inorder(now->r);
@@ -81,6 +81,6 @@ int main()
 {
     Node *root = build_tree();
     scanf("%d%d%d", &ids[0], &ids[1], &ids[2]);
-    printf("\n%d\n", show_inorder(root));
+    printf("\n%d\n", show_inorder(root));//print ans
     return 0;
 }
