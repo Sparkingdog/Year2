@@ -7,7 +7,7 @@
 For the language grammar, please refer to Grammar section on the github page:
 https://github.com/lightbulb12294/CSI2P-II-Mini1#grammar
 */
-
+static int reg;
 #define MAX_LENGTH 200
 typedef enum
 {
@@ -96,7 +96,7 @@ void semantic_check(AST *now);
 void codegen(AST *root);
 // Free the whole AST.
 void freeAST(AST *now);
-
+void resetReg() { reg = 0; }
 /// debug interfaces
 
 // Print token array.
@@ -387,10 +387,10 @@ void semantic_check(AST *now)
         if (tmp->kind != IDENTIFIER)
             err("Lvalue is required as left operand of assignment.");
     }
-    //
-    if (now->kind == ASSIGN)
+    if (now == NULL)
     {
         AST *check_l = now->lhs;
+        AST *check_r = now->rhs;
         if (check_l->kind != POSTINC || check_l->kind != POSTDEC || check_l->kind != PREDEC || check_l->kind != PREINC)
         {
             if (check_l == NULL)
@@ -406,7 +406,6 @@ void semantic_check(AST *now)
             if (check_l->lhs->kind != IDENTIFIER || check_l->rhs->kind != IDENTIFIER)
                 err("Operand of INC/DEC must be an identifier or identifier with one or more parentheses.")
         }
-        AST *check_r = now->rhs;
         if (check_r->kind != POSTINC || check_r->kind != POSTDEC || check_r->kind != PREDEC || check_r->kind != PREINC)
         {
             if (check_r == NULL)
@@ -422,6 +421,7 @@ void semantic_check(AST *now)
             if (check_r->lhs->kind != IDENTIFIER || check_r->rhs->kind != IDENTIFIER)
                 err("Operand of INC/DEC must be an identifier or identifier with one or more parentheses.");
         }
+        //
     }
     // Operand of INC/DEC must be an identifier or identifier with one or more parentheses.
     //! Done??
@@ -432,17 +432,39 @@ void semantic_check(AST *now)
 
 void codegen(AST *root)
 {
-    static int i;
-    static int reg[9];
+
     int l, r;
-    const static char KindName[][20] = {
-        "=", "+", "-", "Mul", "Div", "Rem", "PreInc", "PreDec", "PostInc", "PostDec", "Identifier", "Constant", "Parentheses", "Parentheses", "Plus", "Minus"};
     if (root == NULL)
         return;
     switch (root->kind)
     {
     case ASSIGN:
+        l = root->lhs->val;
+        break;
     case ADD:
+        // left
+        {
+            if (root->lhs->kind == IDENTIFIER) // id
+            {
+                printf("load r%d [%d]\n", reg, (root->lhs->val - 'x') * 4);
+            }
+            else if (root->lhs->kind == CONSTANT)
+            {
+                printf("add r%d %d %d\n", reg, 0, root->lhs->val);
+            }
+            // right
+            if (root->rhs->kind == IDENTIFIER) // id
+            {
+                printf("load r%d [%d]\n", reg + 1, (root->rhs->val - 'x') * 4);
+            }
+            else if (root->rhs->kind == CONSTANT)
+            {
+                printf("add r%d %d %d\n", reg + 1, 0, root->rhs->val);
+            }
+        }
+        printf("add r%d r%d r%d\n", reg, reg, reg + 1);
+        reg += 2;
+        break;
     case SUB:
     case MUL:
     case DIV:
@@ -455,45 +477,15 @@ void codegen(AST *root)
     case RPAR:
     case PLUS:
     case MINUS:
-        // OP
-        switch (root->kind)
-        {
-        case ADD:
-            // left
-            if (root->lhs->kind == IDENTIFIER) // id
-            {
-                reg[i] = (root->lhs->val - 120) * 4;
-                printf("load r%d [%d]\n", reg[i++], (root->lhs->val - 120) * 4);
-                l = (root->lhs->val - 120) * 4;
-            }
-            else if (root->lhs->kind == CONSTANT)
-            {
-                reg[i] = root->lhs->val;
-                printf("add r%d %d\n", reg[i++], root->lhs->val);
-                l = root->lhs->val;
-            }
-            // right
-            if (root->rhs->kind == IDENTIFIER) // id
-            {
-                reg[i] = (root->rhs->val - 120) * 4;
-                printf("load r%d [%d]\n", reg[i++], (root->rhs->val - 120) * 4);
-                r = (root->rhs->val - 120) * 4;
-            }
-            else if (root->rhs->kind == CONSTANT)
-            {
-                reg[i] = root->rhs->val;
-                printf("add r%d %d\n", reg[i++], root->rhs->val);
-                r = root->rhs->val;
-            }
-            break;
-        }
-        // printf("%s ", KindName[root->kind]);
         break;
     case IDENTIFIER:
-        printf("load r%d [%s]\n", i++, (char *)&(root->val));
+        //printf("load r%d [%s]\n", i, (char *)&(root->val));
         break;
     case CONSTANT:
-        printf("%d ", root->val);
+        //printf("%d ", root->val);
+        break;
+    case END:
+        printf("store [%d] r%d ", (l - 'x') * 4, 0);
         break;
     default:
         puts("unknown type");
@@ -515,97 +507,97 @@ void freeAST(AST *now)
     free(now);
 }
 
-void token_print(Token *in, size_t len)
-{
-    const static char KindName[][20] = {
-        "Assign", "Add", "Sub", "Mul", "Div", "Rem", "Inc", "Dec", "Inc", "Dec", "Identifier", "Constant", "LPar", "RPar", "Plus", "Minus", "End"};
-    const static char KindSymbol[][20] = {
-        "'='", "'+'", "'-'", "'*'", "'/'", "'%'", "\"++\"", "\"--\"", "\"++\"", "\"--\"", "", "", "'('", "')'", "'+'", "'-'"};
-    const static char format_str[] = "<Index = %3d>: %-10s, %-6s = %s\n";
-    const static char format_int[] = "<Index = %3d>: %-10s, %-6s = %d\n";
-    for (int i = 0; i < len; i++)
-    {
-        switch (in[i].kind)
-        {
-        case LPAR:
-        case RPAR:
-        case PREINC:
-        case PREDEC:
-        case ADD:
-        case SUB:
-        case MUL:
-        case DIV:
-        case REM:
-        case ASSIGN:
-        case PLUS:
-        case MINUS:
-            printf(format_str, i, KindName[in[i].kind], "symbol", KindSymbol[in[i].kind]);
-            break;
-        case CONSTANT:
-            printf(format_int, i, KindName[in[i].kind], "value", in[i].val);
-            break;
-        case IDENTIFIER:
-            printf(format_str, i, KindName[in[i].kind], "name", (char *)(&(in[i].val)));
-            break;
-        case END:
-            printf("<Index = %3d>: %-10s\n", i, KindName[in[i].kind]);
-            break;
-        default:
-            puts("=== unknown token ===");
-        }
-    }
-}
+// void token_print(Token *in, size_t len)
+// {
+//     const static char KindName[][20] = {
+//         "Assign", "Add", "Sub", "Mul", "Div", "Rem", "Inc", "Dec", "Inc", "Dec", "Identifier", "Constant", "LPar", "RPar", "Plus", "Minus", "End"};
+//     const static char KindSymbol[][20] = {
+//         "'='", "'+'", "'-'", "'*'", "'/'", "'%'", "\"++\"", "\"--\"", "\"++\"", "\"--\"", "", "", "'('", "')'", "'+'", "'-'"};
+//     const static char format_str[] = "<Index = %3d>: %-10s, %-6s = %s\n";
+//     const static char format_int[] = "<Index = %3d>: %-10s, %-6s = %d\n";
+//     for (int i = 0; i < len; i++)
+//     {
+//         switch (in[i].kind)
+//         {
+//         case LPAR:
+//         case RPAR:
+//         case PREINC:
+//         case PREDEC:
+//         case ADD:
+//         case SUB:
+//         case MUL:
+//         case DIV:
+//         case REM:
+//         case ASSIGN:
+//         case PLUS:
+//         case MINUS:
+//             printf(format_str, i, KindName[in[i].kind], "symbol", KindSymbol[in[i].kind]);
+//             break;
+//         case CONSTANT:
+//             printf(format_int, i, KindName[in[i].kind], "value", in[i].val);
+//             break;
+//         case IDENTIFIER:
+//             printf(format_str, i, KindName[in[i].kind], "name", (char *)(&(in[i].val)));
+//             break;
+//         case END:
+//             printf("<Index = %3d>: %-10s\n", i, KindName[in[i].kind]);
+//             break;
+//         default:
+//             puts("=== unknown token ===");
+//         }
+//     }
+// }
 
-void AST_print(AST *root)
-{
-    static char indent_str[MAX_LENGTH] = "";
-    static int indent = 0;
-    char *indent_now = indent_str + indent;
-    const static char KindName[][20] = {
-        "Assign", "Add", "Sub", "Mul", "Div", "Rem", "PreInc", "PreDec", "PostInc", "PostDec", "Identifier", "Constant", "Parentheses", "Parentheses", "Plus", "Minus"};
-    const static char format[] = "%s\n";
-    const static char format_str[] = "%s, <%s = %s>\n";
-    const static char format_val[] = "%s, <%s = %d>\n";
-    if (root == NULL)
-        return;
-    indent_str[indent - 1] = '-';
-    printf("%s", indent_str);
-    indent_str[indent - 1] = ' ';
-    if (indent_str[indent - 2] == '`')
-        indent_str[indent - 2] = ' ';
-    switch (root->kind)
-    {
-    case ASSIGN:
-    case ADD:
-    case SUB:
-    case MUL:
-    case DIV:
-    case REM:
-    case PREINC:
-    case PREDEC:
-    case POSTINC:
-    case POSTDEC:
-    case LPAR:
-    case RPAR:
-    case PLUS:
-    case MINUS:
-        printf(format, KindName[root->kind]);
-        break;
-    case IDENTIFIER:
-        printf(format_str, KindName[root->kind], "name", (char *)&(root->val));
-        break;
-    case CONSTANT:
-        printf(format_val, KindName[root->kind], "value", root->val);
-        break;
-    default:
-        puts("=== unknown AST type ===");
-    }
-    indent += 2;
-    strcpy(indent_now, "| ");
-    AST_print(root->lhs);
-    strcpy(indent_now, "` ");
-    AST_print(root->mid);
-    AST_print(root->rhs);
-    indent -= 2;
-    (*indent_now) = '\0';
-}
+// void AST_print(AST *root)
+// {
+//     static char indent_str[MAX_LENGTH] = "";
+//     static int indent = 0;
+//     char *indent_now = indent_str + indent;
+//     const static char KindName[][20] = {
+//         "Assign", "Add", "Sub", "Mul", "Div", "Rem", "PreInc", "PreDec", "PostInc", "PostDec", "Identifier", "Constant", "Parentheses", "Parentheses", "Plus", "Minus"};
+//     const static char format[] = "%s\n";
+//     const static char format_str[] = "%s, <%s = %s>\n";
+//     const static char format_val[] = "%s, <%s = %d>\n";
+//     if (root == NULL)
+//         return;
+//     indent_str[indent - 1] = '-';
+//     printf("%s", indent_str);
+//     indent_str[indent - 1] = ' ';
+//     if (indent_str[indent - 2] == '`')
+//         indent_str[indent - 2] = ' ';
+//     switch (root->kind)
+//     {
+//     case ASSIGN:
+//     case ADD:
+//     case SUB:
+//     case MUL:
+//     case DIV:
+//     case REM:
+//     case PREINC:
+//     case PREDEC:
+//     case POSTINC:
+//     case POSTDEC:
+//     case LPAR:
+//     case RPAR:
+//     case PLUS:
+//     case MINUS:
+//         printf(format, KindName[root->kind]);
+//         break;
+//     case IDENTIFIER:
+//         printf(format_str, KindName[root->kind], "name", (char *)&(root->val));
+//         break;
+//     case CONSTANT:
+//         printf(format_val, KindName[root->kind], "value", root->val);
+//         break;
+//     default:
+//         puts("=== unknown AST type ===");
+//     }
+//     indent += 2;
+//     strcpy(indent_now, "| ");
+//     AST_print(root->lhs);
+//     strcpy(indent_now, "` ");
+//     AST_print(root->mid);
+//     AST_print(root->rhs);
+//     indent -= 2;
+//     (*indent_now) = '\0';
+// }
