@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 #define max 200001
-#define ll long
+#define ll unsigned long long
 using namespace std;
 
 // class Stack
