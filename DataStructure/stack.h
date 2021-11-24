@@ -29,7 +29,6 @@ bool charStack::push(char x)
     else
     {
         a[++top] = x;
-        cout << x << " pushed charo stack\n";
         return true;
     }
 }
