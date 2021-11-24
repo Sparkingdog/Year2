@@ -29,6 +29,4 @@ def StackInterpreter():  # ! DocString let other people use
         if words[0] == "quit":
             break
         D.get(words[0], unknown)()
-
-
 StackInterpreter()
