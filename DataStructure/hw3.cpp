@@ -83,7 +83,7 @@ public:
     {
         if ((*root) == NULL)
             return;
-        if ((*root)->l == NULL && (*root)->r == NULL) //leaf
+        if ((*root)->l == NULL && (*root)->r == NULL) // leaf
         {
             free(*root);
             return;
@@ -98,7 +98,7 @@ public:
         if (si > ei)
             return -1;
 
-        //stack
+        // stack
         charStack s;
 
         for (int i = si; i <= ei; i++)
@@ -223,14 +223,14 @@ int main()
         }
         else if (!strcmp(command, "Invert")) //! Done
             func.Invert(root);
-        else if (!strcmp(command, "BinaryTower")) //TODO
+        else if (!strcmp(command, "BinaryTower")) // TODO
             func.BinaryTower(root);
         else if (!strcmp(command, "MaximumPathSum")) //! Done
         {
             func.MaximumPathSum(root, 0);
             cout << func.getMaxPathSum << endl;
         }
-        else if (!strcmp(command, "KingdomUnitedPath")) //TODO
+        else if (!strcmp(command, "KingdomUnitedPath")) // TODO
             func.KingdomUnitedPath(root);
         else //! quit
             break;
