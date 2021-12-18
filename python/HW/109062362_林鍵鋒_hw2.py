@@ -2,6 +2,11 @@
 import sys
 l = []
 money =0
+def initialize_categories():
+    return ['expense', ['food', ['meal', 'snack', 'drink'], 'transportation', ['bus', 'railway']], 'income', ['salary', 'bonus']]
+
+def view_catogories():
+    return
 
 def init():
     try:#try to read a file
@@ -72,6 +77,7 @@ def delete():
 
 # main()
 if __name__ == "__main__":
+    catogories=initialize_categories()
     money = input("How much money do you have?")
     try:
         int(money) #if money is integer
@@ -87,6 +93,9 @@ if __name__ == "__main__":
                 view()
             elif command == "delete":
                 delete()
+            elif command == "view catogories":
+                view_catogories()
+
             elif command == "exit":
                 record.writelines(f"{money}\n")
                 record.writelines(f"{l}")
