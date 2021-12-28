@@ -22,5 +22,15 @@ def r_count(x):
         return r_count(x[0])+r_count(x[1:])
 
 
+def search(L, x):
+    for i in L:
+        if type(i) in {list}:
+            if search(i, x):
+                return True
+        if i == x:
+            return True
+    return False
+
+
 L = ["a", ["b", "c", ["d", "e"], "f", "g"]]
-print(count(L))
+print(search(L, "c"))

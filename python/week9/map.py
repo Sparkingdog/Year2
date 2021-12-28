@@ -1,4 +1,4 @@
 a = list(map(ord, "hello"))
 b = list(map(chr, a))
 
-print("".join(b))
+print(list(map(ord, "hello")))
