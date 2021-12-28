@@ -1,0 +1,1 @@
+[['food', 'banana', 20], ['transportation', 'bus', 200], ['a', 'expense', 3]]

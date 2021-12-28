@@ -1,14 +1,23 @@
 
 def rec_find(L, val):
     if type(L) in {list, tuple}:
-        for i, v in enumerate(L):  # i=0,1,2,3 , v = element in l
+        for v in L:  # i=0,1,2,3 , v = element in l
             p = rec_find(v, val)
             if p == True:
-                return(i,)
-            if p != False:
-                return (i,)+p
+                return True
     return L == val
 
 
-L = [1, 2, [3, 4], 5]
-print(L.index(3))
+def word_find(L,word):
+    for i in L:
+        if type(i)in{list}:
+            for child in i:
+                word_find(child,word)
+        if word in i:
+            return True
+    return False
+L = ["1", "2", ["3", "Hello",["banana"]], "5"]
+while True:
+    x=input("Enter a word to search in list :")
+    print(rec_find(L,x))
+

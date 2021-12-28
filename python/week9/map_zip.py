@@ -7,4 +7,4 @@ print(m)
 # zip like [(L1[0]),L2[0],L3[0]]
 #! zip
 z = list(zip(L1, L2, L3))
-print([max(*i) for i in z])
+print([max(*i) for i in z])  # i=(3,6,4),(7,1,8)...

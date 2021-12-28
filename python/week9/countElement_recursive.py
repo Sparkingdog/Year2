@@ -23,4 +23,4 @@ def r_count(x):
 
 
 L = ["a", ["b", "c", ["d", "e"], "f", "g"]]
-print(r_count(L))
+print(count(L))

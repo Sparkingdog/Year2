@@ -46,6 +46,11 @@
     "stack": "cpp",
     "random": "cpp",
     "valarray": "c",
-    "iomanip": "cpp"
+    "iomanip": "cpp",
+    "vector": "cpp"
+  },
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#4a41e9"
   }
 }
+
