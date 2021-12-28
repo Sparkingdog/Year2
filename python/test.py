@@ -1,18 +1,42 @@
-l=[]
-money=0
-try:#try to read a file
-    fh = open("records.txt","r")
-    assert fh.read()!=""
-except (FileNotFoundError,AssertionError):  # fail to open file
-    money = input("How much money do you have?")
-    try:
-            int(money) #if money is integer
-    except:
-        print("Invalid value for money. Set to 0 by default.")
-        money = 0
-else:# success open a file
-    money =fh.readline().strip("\n")
-    print(money)
-    l=fh.readline().strip("\n")
-    print(l)
-    fh.close()
+
+def x(categories,target):
+
+    for child in categories:
+        if type(child) == list:
+            return x(child,target)
+        if target == child:
+            return True
+    return False
+
+def y(categories,target):
+
+    if type(categories) not in {list,tuple}:#element
+        return 
+    else:#list or tuple
+        if target in categories:
+            return True
+        for i in categories:
+            y(i,target)
+    return False
+def is_category_valid(categories,category):#! BUG
+    if category in categories:
+        return True
+    if type(categories) == list:
+        for child in categories:
+            map(is_category_valid(child,category),child)
+    return 
+
+def rec_find(L, val):
+    if type(L) in {list, tuple}:
+        for i, v in enumerate(L):  # i=0,1,2,3 , v = element in l
+            p = rec_find(v, val)
+            if p == True:
+                return(i,)
+            if p != False:
+                return (i,)+p
+    return L == val
+
+categories=['expense', ['food', ['meal','snack','drink'],'transportation', ['bus', 'railway']], 'income', ['salary', 'bonus']]
+while True:
+    target =input()
+    print(rec_find(categories,target))

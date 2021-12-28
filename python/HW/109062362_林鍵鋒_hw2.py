@@ -1,7 +1,58 @@
 # list ver
 import sys
 l = []
+flat=[]#flatten use
 money =0
+def init_categories():
+    return ['expense', ['food', ['meal','snack','drink'],'transportation', ['bus', 'railway']], 'income', ['salary', 'bonus']]
+
+def is_category_valid(categories,category):
+    if categories == None:
+        return
+    if category in categories:
+        return True
+    if type(categories)in{list,tuple}:
+        for i in categories:
+            is_category_valid(i,category)
+    else:
+        print(categories)
+
+def view_categories(L,level=0):
+    if L == None:
+        return
+    if type(L) in {list, tuple}:  # if is list or tuple
+        for child in L:
+            view_categories(child, level+1)
+    else:  # element
+        print(f'{" "*4*level}->{L}')
+            
+def find_subcategories(category, categories):
+    if type(categories) == list:
+        for v in categories:
+            p = find_subcategories(category, v)
+            if p == True:
+                index = categories.index(v)
+                if index + 1 < len(categories) and \
+                        type(categories[index + 1]) == list:
+                    return flatten(categories[index:index + 2])
+                else:
+                    # return only itself if no subcategories
+                    return [v]
+            if p != []:
+                return p
+    return True if categories == category else []
+ 
+def flatten(L):
+    for i in L:
+        if type(L) == int:
+            flat.append(i)
+        if type(i)== list:
+            flatten(i)
+    return flat
+
+    
+    # return a flat list that contains all element in the nested list L
+    # for example, flatten([1, 2, [3, [4], 5]]) returns [1, 2, 3, 4, 5]
 
 def init():
     try:#try to read a file
@@ -25,12 +76,14 @@ def init():
         fh.close()
         return
         
-def add():
-    expense = input(
-        "Add an expense or income record with discription and amount:")
+def add():#expense[0]=category,expense[1]=item,expense[2]=price
+    expense = input("Add an expense or income record with discription and amount:")
     expense = tuple((expense.split()))  # store the data in tuple
     try:  # if fail to split
-        int(expense[1])
+        assert is_category_valid(init_categories(),expense[1])==True
+        int(expense[2])
+    except AssertionError:
+        print("There is no current category")
     except:
         print("The format of a record should be like this: breakfast -50.")
         print("Fail to add a record")
@@ -39,16 +92,16 @@ def add():
     return
 
 
-def view():
+def view(self):
     total = int(money)
     idx = 0
-    print("Description      Amount")
-    print("===========      ======")
+    print("Category          Description        Amount")
+    print("========          ===========        ======")
     for i in l:
         idx = idx+1
-        total += int(i[1])
-        print(f"{idx}: {i[0]:<10}{i[1]:>10}")  # i[0]->item i[1]->price
-    print("===========      ======")
+        total += int(i[2])
+        print(f"{idx}: {i[0]:<10}{i[1]:>10}{i[2]:>20}")  # i[0]->categories ,i[1]->item i[2]->price
+    print("========          ===========        ======")
     print(f"Now you have {total} dollars.")
     return
 
@@ -87,6 +140,11 @@ if __name__ == "__main__":
                 view()
             elif command == "delete":
                 delete()
+            elif command == "view categories":
+                view_categories(init_categories())
+            elif command == "find":
+                find=input("Which category do you want to find?")
+                find_subcategories(find,init_categories)
             elif command == "exit":
                 record.writelines(f"{money}\n")
                 record.writelines(f"{l}")
