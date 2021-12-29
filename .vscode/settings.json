@@ -48,6 +48,9 @@
     "valarray": "c",
     "iomanip": "cpp",
     "vector": "cpp"
+  },
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#cb1d6c"
   }
 }
 

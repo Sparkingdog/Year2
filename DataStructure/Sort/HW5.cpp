@@ -25,15 +25,16 @@ int main()
     {
         cin >> d;
         if (d <= 0)
-            left.push_back(d);
+            left.insert(left.begin(), d);
         else
             right.push_back(d);
     }
-    reverse(left.begin(), left.end());
+    //printArray(right);
+    //printArray(left);
     l = left.begin(), r = right.begin();
-    while (l < left.end() && r < right.end())
+    for (int i = 0; i < n; i++)
     {
-        if (abs(*l) <= (*r))
+        if (abs(*l) <= (*r) && l != left.end() && !right.empty())
         {
             arr.push_back(*l);
             l++;
@@ -44,9 +45,5 @@ int main()
             r++;
         }
     }
-    if (r != right.end())
-        arr.push_back(*r);
-    if (l != left.end())
-        arr.push_back(*l);
     printArray(arr);
 }
